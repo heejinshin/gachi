@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smart.home.dao.RegisterDAO">
+
+<insert id="registerInsert" parameterType="com.smart.home.dto.RegisterDTO">
+    INSERT INTO register(userId, userPwd, userName, userAge, userGender, email, tel, hostState, hiredate, hobby, local)
+    VALUES(#{userId}, #{userPwd}, #{userName}, #{userAge}, #{userGender}, #{email}, #{tel}, 'X', NOW(), #{hobby}, #{local});
+</insert>
+
+	<select id="loginOk" resultType="com.smart.home.dto.RegisterDTO">
+		select userId, userName from register
+		where userId=#{userId} and userPwd =#{userPwd} 
+	</select>
+	<select id="idSearch" resultType="com.smart.home.dto.RegisterDTO">
+		select userId, email from register where userName=#{userName} and tel=#{tel}
+	</select>
+</mapper>
+

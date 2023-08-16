@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.smart.home.dao.ReplyboardsDAO">
+     <insert id="replyInsert">
+        insert into replyboards(replyNo, boardsNo, userId, reply, writedate)
+        values(replyboards_seq.nextval, ${boardsNo}, #{userId}, #{reply}, now())
+     </insert>
+     <select id="replySelect" resultType="com.smart.home.dto.ReplyboardsDTO">
+        select replyNo, boardsNo, reply, userId, writedate from replyboards where boardsNo=${param1} order by replyNo desc
+     </select>
+     <update id="replyUpdate">
+        update replyboards set reply=#{reply} where replyNo=${replyNo}
+     </update>
+     <delete id="replyDelete">
+        delete from replyboards where replyNo=${param1}
+     </delete>
+  </mapper>

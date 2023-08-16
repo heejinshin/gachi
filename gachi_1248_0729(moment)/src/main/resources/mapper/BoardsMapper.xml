@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smart.home.dao.BoardsDAO">
+   <!-- 글 등록 -->
+   <insert id="boardsInsert" parameterType="com.smart.home.dto.BoardsDTO" useGeneratedKeys="true" keyProperty="boardsNo">
+      INSERT INTO boards(userId, subject, content, hit, writedate)
+	VALUES (#{userId}, #{subject}, #{content}, 0, NOW());
+   </insert>
+
+   <!-- 업로드 파일목록을 insert -->
+ <insert id="boardsFileInsert" parameterType="java.util.List">
+   <foreach item="item" collection="list" separator=";">
+      INSERT INTO boards_file (boardsNo, filename) VALUES (#{item.boardsNo}, #{item.filename})
+   </foreach>
+</insert>
+
+   <!-- 원글 삭제 -->
+   <delete id="boardsDelete">
+      DELETE FROM boards WHERE boardsNo=#{param1} AND userId=#{param2};
+   </delete>
+
+   <!-- 첨부파일목록 지우기 -->
+   <delete id="boardsFileDelete">
+      DELETE FROM boards_file WHERE boardsNo=#{param1};
+   </delete>
+
+   <!-- 1개레코드 -->
+   <select id="boardsSelect" resultType="com.smart.home.dto.BoardsDTO">
+      SELECT boardsNo, userId, subject, content, hit, writedate
+      FROM boards WHERE boardsNo=#{param1};
+   </select>
+
+   <!-- 조회수 증가 -->
+   <update id="hitCount">
+      UPDATE boards SET hit=hit+1 WHERE boardsNo=#{param1};
+   </update>
+
+   <select id="boardsFileSelect" resultType="com.smart.home.dto.BoardsFileDTO">
+      SELECT boardsNo, filename FROM boards_file WHERE boardsNo=#{param1};
+   </select>
+
+   <update id="boardsUpdate">
+      UPDATE boards SET subject=#{subject}, content=#{content} WHERE boardsNo=#{boardsNo};
+   </update>
+
+   <select id="totalRecord" resultType="int">
+      SELECT COUNT(boardsNo) AS cnt FROM boards
+      <if test="searchWord != null">
+         WHERE ${searchKey} LIKE CONCAT('%', #{searchWord}, '%')
+      </if>
+   </select>
+
+   <select id="getBoardsList" resultType="com.smart.home.dto.BoardsDTO">
+         SELECT boardsNo, userId, subject, content, hit,
+           DATE_FORMAT(writedate, '%m-%d %H:%i') AS writedate
+    FROM boards
+    <!-- 검색어가 있을때 -->
+    <if test="searchWord != null">
+        WHERE ${searchKey} LIKE CONCAT('%', #{searchWord}, '%')
+    </if>
+    ORDER BY boardsNo DESC
+    LIMIT #{onePageRecord} OFFSET #{offset}
+   </select>
+</mapper>

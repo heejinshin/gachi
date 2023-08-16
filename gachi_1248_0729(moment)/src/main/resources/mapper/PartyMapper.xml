@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.smart.home.dao.PartyDAO">
+        <select id="getParty" resultType="com.smart.home.dto.PartyDTO">
+           select partyNo, partyName, partyContent, partyPlace, recruitStart from party
+           where partyNo=#{param1}
+        </select>
+     	<select id="partyList" resultType="com.smart.home.dto.PartyDTO">
+           select partyNo, partyName, partyContent from party 
+        </select>
+        <select id="CategoryList" resultType="com.smart.home.dto.PartyDTO">
+           select partyNo ,partyName, partyContent from party 
+            where hobby=#{hobby}
+        </select>
+        <select id="totalRecord" resultType="int">
+           SELECT COUNT(partyNo) AS cnt FROM party
+	      <if test="searchWord != null">
+	         WHERE ${searchKey} LIKE CONCAT('%', #{searchWord}, '%')
+	      </if>
+        </select>
+     	<!-- <insert id="boardWriteOk">
+           insert into board(no, subject, content, userid, hit, writedate, ip)
+           values(boards_num_seq.nextval, #{subject}, #{content}, #{userid}, 0, sysdate, #{ip})
+        </insert>
+        <update id= "hitCount">
+           update board set hit=hit+1 where no=${param1}
+        </update>
+        <update id="boardEdit">
+           update board set subject= #{subject}, content=#{content}
+           where no=${no} and userid=#{userid}
+        
+        </update>
+        <delete id="boardDel">
+           delete from board where no=${param1} and userid=#{param2}
+        </delete>
+         -->  
+         <!-- 메롱 -->
+         <insert id="PartyParticipationForm" parameterType="com.smart.home.dto.PartyDTO">
+         	INSERT INTO party_participation(partyNo, userId)
+         	VALUES(#{partyNo}, #{userId})
+         </insert>
+         
+        <insert id="PartyFormOk" parameterType="com.smart.home.dto.PartyDTO">
+        	INSERT INTO party(userId, hobby, local, partyName, partyContent, partyPlace, partyDay, recruitStart, recruitEnd)
+        	VALUES(#{userId}, #{hobby}, #{local}, #{partyName}, #{partyContent}, #{partyPlace}, #{partyDay}, #{recruitStart}, #{recruitEnd})
+        </insert>
+        
+        <insert id="PartyFileInsert" parameterType="java.util.List">
+        	<foreach item="item" collection="list" separator=";">
+        		INSERT INTO party_file(partyNo, filename)
+        		VALUES(#{item.partyNo}, #{item.filename})
+        	</foreach>
+        </insert>
+        
+        <delete id="PartyDel">
+        	DELETE FROM party WHERE partyNo = #{param1} AND userId = #{param2}
+        </delete>
+        
+        <delete id="PartyFileDelete">
+        	DELETE FROM party_file WHERE partyNo = #{param1}
+        </delete>
+  </mapper>
